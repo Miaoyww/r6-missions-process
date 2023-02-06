@@ -41,8 +41,8 @@ const dragOptions = {
   <draggable
       :list="cards"
       item-key="id"
-      animation="250"
-      class="list-group">
+      v-bind="dragOptions"
+      handle=".handle">
     <template #item="{ element, index }">
       <mission-card
           :key="element.id"

@@ -10,12 +10,16 @@ const missionDetails = ref({
   ms1: {
     desc: "使用Jackal、Caveira、Lion或Alibi的独特技能暴露10名敌人的信息。",
     target: 10
+  },
+  ms2: {
+    desc: "使用爆炸装备消灭5名敌人。",
+    target: 5
   }
 });
 
 const prop = defineProps(['id', 'selectedValue', 'missionItems'])
 const missionNames = computed(() => {
-  return prop.missionItems ? prop.missionItems : [{value: "ms1", label: "情报工作"}]
+  return prop.missionItems ? prop.missionItems : [{value: "ms1", label: "情报工作"}, {value: "ms2", label: "爆炸冲击波"}]
 })
 const emit = defineEmits(['closeCard', 'updateUserInputValues']);
 const missionName = ref('');
@@ -68,6 +72,7 @@ function formatter(value) {
 <template>
   <div>
     <el-card class="box-card" shadow="never" body-style="padding: 16px">
+      <div class="handle card-handle"></div>
       <el-button @click="emit('closeCard')" :icon="CloseBold" class="card-close-button" plain/>
       <div class="wrapper">
         <el-select
@@ -134,6 +139,9 @@ export default {
   justify-content: space-between;
   flex-direction: row;
   flex-wrap: wrap;
+  margin-top: -8px;
+  margin-bottom: 8px;
+  margin-left: -8px;
 }
 
 .card-close-button {
@@ -143,10 +151,11 @@ export default {
   width: 35px;
   height: 35px;
   font-size: 15px;
-  border-color: transparent;
+  border-color: #f1f1f1;
+  background-color: #f1f1f1;
   --el-button-hover-text-color: #E81123 !important;
-  --el-button-hover-border-color: transparent !important;
-  --el-button-active-border-color: transparent !important;
+  --el-button-hover-border-color: #f1f1f1 !important;
+  --el-button-active-border-color: #f1f1f1 !important;
   --el-button-active-text-color: #DC5C66;
 }
 
@@ -160,16 +169,19 @@ export default {
   position: relative;
   width: 470px;
   height: 240px;
-  /*margin: 20px;*/
-  --el-card-border-color: #d2d2d2
+  margin: 20px;
+  --el-card-border-color: #d2d2d2;
+  --el-card-border-radius: 10px;
 }
 
 .card-handle{
+  cursor: move;
+  background: #f1f1f1;
   width: 470px;
-  height: 240px;
+  height: 48px;
   position: absolute;
   top:0;
-  left:0
+  left:0;
 }
 /*.el-button + .el-button {*/
 /*  margin-left: 5px;*/

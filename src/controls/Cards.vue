@@ -41,23 +41,22 @@ const dragOptions = {
   <draggable
       :list="cards"
       item-key="id"
-      v-bind="dragOptions">
-<!--      handle=".handle"-->
+      animation="250"
+      class="list-group">
     <template #item="{ element, index }">
-        <mission-card
-            :key="element.id"
-            :id="element.id"
-            :mission-items="element.missionItems"
-            :selected-value="element.selectedValue"
-            @closeCard="elementRemove(index)"
-            @updateUserInputValues="updateUserInputValue"/>
+      <mission-card
+          :key="element.id"
+          :id="element.id"
+          :mission-items="element.missionItems"
+          :selected-value="element.selectedValue"
+          @closeCard="elementRemove(index)"
+          @updateUserInputValues="updateUserInputValue"/>
     </template>
-
   </draggable>
 </template>
 
 <style scoped>
-.ghost-card{
+.ghost-card {
   opacity: 0.2;
 }
 </style>

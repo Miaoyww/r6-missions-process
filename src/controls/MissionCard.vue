@@ -66,57 +66,58 @@ function formatter(value) {
 </script>
 
 <template>
-  <el-card class="box-card" shadow="never" body-style="padding: 16px">
-<!--    <div class="handle card-handle"></div>-->
-    <el-button @click="emit('closeCard')" :icon="CloseBold" class="card-close-button" plain/>
-    <div class="wrapper">
-      <el-select
-          v-model="missionName"
-          clearable
-          filterable
-          remote
-          reserve-keyword
-          @change="onValueChanged"
-          placeholder="任务名称"
-          remote-show-suffix>
-        <el-option
-            v-for="item in missionNames"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"/>
-      </el-select>
-    </div>
-    <div>
-      <!-- 任务简介 -->
-      <p>{{ missionDetails[missionName].desc }}</p>
-    </div>
-    <div style="position: absolute;bottom: 0;width: 438px;margin-bottom: 16px">
-      <!-- 用户控件 -->
-      <div style="text-align: right; margin-bottom: 10px">
-        <div style="display: inline; margin-right: 10px">
-          <el-input style="width: 125px"
-                    input-style="text-align: right"
-                    v-model="missionCurrentProcess"
-                    :disabled="userControlsDisable"
-                    :formatter="formatter"
-                    :parser="(value) => value.replace(/\D*/g, '')"
-          >
-            <template #append>
-              <div style="display: inline; margin: 0 -15px">/ {{ missionDetails[missionName].target }}</div>
-            </template>
-          </el-input>
-        </div>
-        <el-button-group>
-          <el-button @click="processMinus" class="card-button" :disabled="userControlsDisable">-</el-button>
-          <el-button @click="processPlus" class="card-button" :disabled="userControlsDisable">+</el-button>
-          <el-button @click="processComplete" class="card-button" :icon="CircleCheck" :disabled="userControlsDisable"/>
-        </el-button-group>
+  <div>
+    <el-card class="box-card" shadow="never" body-style="padding: 16px">
+      <el-button @click="emit('closeCard')" :icon="CloseBold" class="card-close-button" plain/>
+      <div class="wrapper">
+        <el-select
+            v-model="missionName"
+            clearable
+            filterable
+            remote
+            reserve-keyword
+            @change="onValueChanged"
+            placeholder="任务名称"
+            remote-show-suffix>
+          <el-option
+              v-for="item in missionNames"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+        </el-select>
       </div>
       <div>
-        <el-progress :percentage="processPercentage" :show-text="false" :stroke-width="15" style="margin-bottom: -8px"/>
+        <!-- 任务简介 -->
+        <p>{{ missionDetails[missionName].desc }}</p>
       </div>
-    </div>
-  </el-card>
+      <div style="position: absolute;bottom: 0;width: 438px;margin-bottom: 16px">
+        <!-- 用户控件 -->
+        <div style="text-align: right; margin-bottom: 10px">
+          <div style="display: inline; margin-right: 10px">
+            <el-input style="width: 125px"
+                      input-style="text-align: right"
+                      v-model="missionCurrentProcess"
+                      :disabled="userControlsDisable"
+                      :formatter="formatter"
+                      :parser="(value) => value.replace(/\D*/g, '')"
+            >
+              <template #append>
+                <div style="display: inline; margin: 0 -15px">/ {{ missionDetails[missionName].target }}</div>
+              </template>
+            </el-input>
+          </div>
+          <el-button-group>
+            <el-button @click="processMinus" class="card-button" :disabled="userControlsDisable">-</el-button>
+            <el-button @click="processPlus" class="card-button" :disabled="userControlsDisable">+</el-button>
+            <el-button @click="processComplete" class="card-button" :icon="CircleCheck" :disabled="userControlsDisable"/>
+          </el-button-group>
+        </div>
+        <div>
+          <el-progress :percentage="processPercentage" :show-text="false" :stroke-width="15" style="margin-bottom: -8px"/>
+        </div>
+      </div>
+    </el-card>
+  </div>
 </template>
 
 <script>

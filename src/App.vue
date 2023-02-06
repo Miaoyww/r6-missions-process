@@ -23,6 +23,17 @@ function elementRemove(index) {
 
   <button @click="elementAdd">点击添加一个组件</button>
   <button @click="elementRemove">点击删除一个组件</button>
-  <mission-card v-for="(item, index) in cards" :card-index="index" @closeCard="elementRemove"/>
-
+  <div class="cards-div">
+    <el-space :size="20" wrap>
+      <mission-card v-for="(item, index) in cards" :card-index="index" @closeCard="elementRemove"/>
+    </el-space>
+  </div>
 </template>
+
+<style>
+.cards-div{
+  width: 1000px;
+  /*margin-left:auto;*/
+  /*margin-right:auto;*/
+}
+</style>

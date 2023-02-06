@@ -1,10 +1,11 @@
 <script setup>
 import {computed, ref} from "vue";
+import {CircleCheck, CloseBold} from "@element-plus/icons-vue";
 
 const prop = defineProps({
   cardIndex: Number
 })
-console.log("get card Index",prop.cardIndex)
+console.log("get card Index", prop.cardIndex)
 const missionDetails = ref({
   '': {
     desc: "在您选择任务后自动补全",
@@ -42,6 +43,10 @@ function processMinus() {
   }
 }
 
+function processComplete() {
+  missionCurrentProcess.value = missionDetails.value[missionName.value].target
+}
+
 function onValueChanged(value) {
   missionCurrentProcess.value = 0;
   userControlsDisable.value = !(value !== '');
@@ -53,54 +58,44 @@ const closeCard = () => {
 </script>
 
 <template>
-  <div class="card-div">
-    <el-card class="box-card" shadow="never">
-      <div class="wrapper">
-        <el-select
-            v-model="missionName"
-            clearable
-            filterable
-            remote
-            reserve-keyword
-            @change="onValueChanged"
-            placeholder="任务名称"
-            remote-show-suffix>
-          <el-option
-              v-for="item in missionNames"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"/>
-        </el-select>
-        <div style="horiz-align: right;vertical-align: top">
-          <el-button @click="closeCard" class="card-button" style="font-size:15px;border-color: transparent">
-            <el-icon>
-              <CloseBold/>
-            </el-icon>
-          </el-button>
-        </div>
-      </div>
-      <div>
-        <!-- 任务简介 -->
-        <p>{{ missionDetails[missionName].desc }}</p>
-        <!-- 任务进度 -->
-        <div style="text-align: right">
-          <el-progress :percentage="processPercentage"
-                       :show-text="false"/>
-          <div style="margin-top: 2px">{{ missionCurrentProcess }}/{{ missionDetails[missionName].target }}</div>
-        </div>
-        <!-- 用户控件 -->
-        <div style="text-align: right">
+  <el-card class="box-card" shadow="never" body-style="padding: 16px">
+    <el-button @click="closeCard" :icon="CloseBold" class="card-close-button" plain/>
+    <div class="wrapper">
+      <el-select
+          v-model="missionName"
+          clearable
+          filterable
+          remote
+          reserve-keyword
+          @change="onValueChanged"
+          placeholder="任务名称"
+          remote-show-suffix>
+        <el-option
+            v-for="item in missionNames"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"/>
+      </el-select>
+    </div>
+    <div>
+      <!-- 任务简介 -->
+      <p>{{ missionDetails[missionName].desc }}</p>
+    </div>
+    <div style="position: absolute;bottom: 0;width: 438px;margin-bottom: 16px">
+      <!-- 用户控件 -->
+      <div style="text-align: right; margin-bottom: 10px">
+        <div style="display: inline; margin-right: 10px">{{ missionCurrentProcess }}/{{ missionDetails[missionName].target }}</div>
+        <el-button-group>
           <el-button @click="processMinus" class="card-button" :disabled="userControlsDisable">-</el-button>
           <el-button @click="processPlus" class="card-button" :disabled="userControlsDisable">+</el-button>
-          <el-button class="card-button" :disabled="userControlsDisable">
-            <el-icon>
-              <Document/>
-            </el-icon>
-          </el-button>
-        </div>
+          <el-button @click="processComplete" class="card-button" :icon="CircleCheck" :disabled="userControlsDisable"/>
+        </el-button-group>
       </div>
-    </el-card>
-  </div>
+      <div>
+        <el-progress :percentage="processPercentage" :show-text="false"/>
+      </div>
+    </div>
+  </el-card>
 </template>
 
 <script>
@@ -119,9 +114,18 @@ export default {
   flex-wrap: wrap;
 }
 
-.card-div {
-  margin: 20px;
-  padding: 0px;
+.card-close-button{
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 35px;
+  height: 35px;
+  font-size:15px;
+  border-color: transparent;
+  --el-button-hover-text-color: #E81123 !important;
+  --el-button-hover-border-color: transparent !important;
+  --el-button-active-border-color: transparent !important;
+  --el-button-active-text-color: #DC5C66;
 }
 
 .card-button {
@@ -130,13 +134,15 @@ export default {
   font-size: 20px;
 }
 
-.el-card {
-  width: 400px;
-  height: 230px;
-  --el-card-border-color: #c1c1c1
+.box-card {
+  position: relative;
+  width: 470px;
+  height: 240px;
+  /*margin: 20px;*/
+  --el-card-border-color: #d2d2d2
 }
 
-.el-button + .el-button {
-  margin-left: 5px;
-}
+/*.el-button + .el-button {*/
+/*  margin-left: 5px;*/
+/*}*/
 </style>

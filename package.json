@@ -10,7 +10,10 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.0.10",
     "element-plus": "^2.2.29",
-    "vue": "^3.2.45"
+    "uuid": "^9.0.0",
+    "uuidv4": "^6.2.13",
+    "vue": "^3.2.45",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

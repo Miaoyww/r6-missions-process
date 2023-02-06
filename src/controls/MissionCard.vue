@@ -19,7 +19,10 @@ const missionDetails = ref({
 
 const prop = defineProps(['id', 'selectedValue', 'missionItems'])
 const missionNames = computed(() => {
-  return prop.missionItems ? prop.missionItems : [{value: "ms1", label: "情报工作"}, {value: "ms2", label: "爆炸冲击波"}]
+  return prop.missionItems ? prop.missionItems : [{value: "ms1", label: "情报工作"}, {
+    value: "ms2",
+    label: "爆炸冲击波"
+  }]
 })
 const emit = defineEmits(['closeCard', 'updateUserInputValues']);
 const missionName = ref('');
@@ -91,7 +94,7 @@ function formatter(value) {
               :value="item.value"/>
         </el-select>
       </div>
-      <div>
+      <div class="mission-details-div">
         <!-- 任务简介 -->
         <p>{{ missionDetails[missionName].desc }}</p>
       </div>
@@ -114,11 +117,13 @@ function formatter(value) {
           <el-button-group>
             <el-button @click="processMinus" class="card-button" :disabled="userControlsDisable">-</el-button>
             <el-button @click="processPlus" class="card-button" :disabled="userControlsDisable">+</el-button>
-            <el-button @click="processComplete" class="card-button" :icon="CircleCheck" :disabled="userControlsDisable"/>
+            <el-button @click="processComplete" class="card-button" :icon="CircleCheck"
+                       :disabled="userControlsDisable"/>
           </el-button-group>
         </div>
         <div>
-          <el-progress :percentage="processPercentage" :show-text="false" :stroke-width="15" style="margin-bottom: -8px"/>
+          <el-progress :percentage="processPercentage" :show-text="false" :stroke-width="15"
+                       style="margin-bottom: -8px"/>
         </div>
       </div>
     </el-card>
@@ -140,7 +145,6 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
   margin-top: -8px;
-  margin-bottom: 8px;
   margin-left: -8px;
 }
 
@@ -159,6 +163,10 @@ export default {
   --el-button-active-text-color: #DC5C66;
 }
 
+.mission-details-div {
+  margin-top: 16px;
+}
+
 .card-button {
   width: 30px;
   height: 30px;
@@ -174,15 +182,16 @@ export default {
   --el-card-border-radius: 10px;
 }
 
-.card-handle{
+.card-handle {
   cursor: move;
   background: #f1f1f1;
   width: 470px;
   height: 48px;
   position: absolute;
-  top:0;
-  left:0;
+  top: 0;
+  left: 0;
 }
+
 /*.el-button + .el-button {*/
 /*  margin-left: 5px;*/
 /*}*/

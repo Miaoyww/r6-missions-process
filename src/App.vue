@@ -3,19 +3,19 @@ import {ref} from 'vue'
 import MissionCard from '@/controls/MissionCard.vue';
 
 const cards = ref([])
+const cardRef = ref()
+// ------------临时---------------
+elementAdd();
 
-// ------------临时----------------NMSL
-cards.value.push({})
-// -------------------------------NMSL
+// -------------------------------
 
 function elementAdd() {
   cards.value.push({})
 }
 
-function elementRemove() {
-  if (cards.value.length >= 1) {
-    cards.value.pop()
-  }
+function elementRemove(index) {
+  console.log("deleting index", index)
+  cards.value.splice(index, 1)
 }
 </script>
 
@@ -23,6 +23,6 @@ function elementRemove() {
 
   <button @click="elementAdd">点击添加一个组件</button>
   <button @click="elementRemove">点击删除一个组件</button>
-  <mission-card v-for="item in cards"/>
+  <mission-card v-for="(item, index) in cards" :card-index="index" @closeCard="elementRemove"/>
 
 </template>

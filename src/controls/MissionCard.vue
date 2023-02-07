@@ -2,72 +2,77 @@
 import {computed, ref} from "vue";
 import {CircleCheck, CloseBold} from "@element-plus/icons-vue";
 
-const missionDetails = ref({
-  '': {
-    desc: "在您选择任务后自动补全",
-    target: 0
-  },
-  ms1: {
-    desc: "使用Jackal、Caveira、Lion或Alibi的独特技能暴露10名敌人的信息。",
-    target: 10
-  },
-  ms2: {
-    desc: "使用爆炸装备消灭5名敌人。",
-    target: 5
-  }
-});
-
-const prop = defineProps(['id', 'selectedValue', 'missionItems'])
+// 接收父级组件传来的参数
+const prop = defineProps(['id', 'selectedValue', 'missions'])
+const missions = computed(() => {
+  return prop.missions ? prop.missions :
+      {
+        '': {
+          desc: "在您选择任务后自动补全",
+          target: 0
+        },
+        ms1: {
+          desc: "使用Jackal、Caveira、Lion或Alibi的独特技能暴露10名敌人的信息。",
+          target: 10
+        },
+        ms2: {
+          desc: "使用爆炸装备消灭5名敌人。",
+          target: 5
+        }
+      }
+})
 const missionNames = computed(() => {
-  return prop.missionItems ? prop.missionItems : [{value: "ms1", label: "情报工作"}, {
+  return prop.missions ? prop.missions : [{value: "ms1", label: "情报工作"}, {
     value: "ms2",
     label: "爆炸冲击波"
   }]
 })
 const emit = defineEmits(['closeCard', 'updateUserInputValues']);
-const missionName = ref('');
-const missionCurrentProcess = ref(0);
-const processPercentage = computed(() => {
-  return missionCurrentProcess.value > 0 ? Math.round((missionCurrentProcess.value / missionDetails.value[missionName.value].target) * 100) : 0
+const missionName = ref('');  // 任务名称
+const missionCurrentProcess = ref(0);  // 任务进度
+const processPercentage = computed(() => {  // 进度条百分比
+  if (missionCurrentProcess.value > 0) {
+    if (missionCurrentProcess.value > missions.value[missionName.value].target) {
+      return 100;
+    }
+    return Math.round((missionCurrentProcess.value / missions.value[missionName.value].target) * 100)
+  } else {
+    return 0;
+  }
 })
-const userControlsDisable = ref(true);
+const userControlsDisable = ref(true);  // 用户控件是否禁止
 
 function processPlus() {
-  if (missionCurrentProcess.value < missionDetails.value[missionName.value].target) {
+  if (missionCurrentProcess.value < missions.value[missionName.value].target) {
     missionCurrentProcess.value++;
   }
+  onValueChanged();
 }
 
 function processMinus() {
   if (missionCurrentProcess.value > 0) {
     missionCurrentProcess.value--;
   }
+  onValueChanged();
 }
 
 function processComplete() {
-  missionCurrentProcess.value = missionDetails.value[missionName.value].target
+  missionCurrentProcess.value = missions.value[missionName.value].target
+  onValueChanged();
 }
 
+// 用户修改值后调用
 function onValueChanged(value) {
-
-  missionCurrentProcess.value = 0;
+  missionCurrentProcess.value =
+      missionCurrentProcess.value < missions.value[missionName.value].target ?
+          missionCurrentProcess.value : missions.value[missionName.value].target;
   userControlsDisable.value = !(value !== '');
-  valueUpdate();
-  console.log('onValueChanged completed!')
+  console.log('onValueChanged ran!')
 }
 
-function valueUpdate() {
-  emit('updateUserInputValues', [prop.id, 'selectedValue', missionName.value])
-}
-
+// formatter needed
 function formatter(value) {
-  if (value > missionDetails.value[missionName.value].target) {
-    return missionDetails.value[missionName.value].target
-  } else if (value === '0') {
-    return '0'
-  } else {
-    return value.replace(/\b(0+)/g, "")
-  }
+  return value;
 }
 
 </script>
@@ -96,7 +101,7 @@ function formatter(value) {
       </div>
       <div class="mission-details-div">
         <!-- 任务简介 -->
-        <p>{{ missionDetails[missionName].desc }}</p>
+        <p>{{ missions[missionName].desc }}</p>
       </div>
       <div style="position: absolute;bottom: 0;width: calc(100% - 32px);margin-bottom: 16px">
         <!-- 用户控件 -->
@@ -105,12 +110,12 @@ function formatter(value) {
             <el-input style="width: 125px"
                       input-style="text-align: right"
                       v-model="missionCurrentProcess"
+                      @change="onValueChanged"
                       :disabled="userControlsDisable"
                       :formatter="formatter"
-                      :parser="(value) => value.replace(/\D*/g, '')"
-            >
+                      :parser="(value) => value.replace(/\D*/g, '')">
               <template #append>
-                <div style="display: inline; margin: 0 -15px">/ {{ missionDetails[missionName].target }}</div>
+                <div style="display: inline; margin: 0 -15px">/ {{ missions[missionName].target }}</div>
               </template>
             </el-input>
           </div>

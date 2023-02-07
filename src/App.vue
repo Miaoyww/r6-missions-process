@@ -1,9 +1,9 @@
 <script setup>
-import Cards from '@/controls/Cards.vue';
+import Main from '@/Index.vue';
 </script>
 
 <template>
-  <Cards/>
+  <Main/>
 </template>
 
 <style>

@@ -74,7 +74,7 @@ function formatter(value) {
 
 <template>
   <div>
-    <el-card class="box-card" shadow="never" body-style="padding: 16px">
+    <el-card class="box-card" shadow="never" body-style="padding: 16px" style="margin-left: auto; margin-right: auto">
       <div class="handle card-handle"></div>
       <el-button @click="emit('closeCard')" :icon="CloseBold" class="card-close-button" plain/>
       <div class="wrapper">
@@ -98,7 +98,7 @@ function formatter(value) {
         <!-- 任务简介 -->
         <p>{{ missionDetails[missionName].desc }}</p>
       </div>
-      <div style="position: absolute;bottom: 0;width: 438px;margin-bottom: 16px">
+      <div style="position: absolute;bottom: 0;width: calc(100% - 32px);margin-bottom: 16px">
         <!-- 用户控件 -->
         <div style="text-align: right; margin-bottom: 10px">
           <div style="display: inline; margin-right: 10px">
@@ -114,7 +114,7 @@ function formatter(value) {
               </template>
             </el-input>
           </div>
-          <el-button-group>
+          <el-button-group style="margin-right: 5px">
             <el-button @click="processMinus" class="card-button" :disabled="userControlsDisable">-</el-button>
             <el-button @click="processPlus" class="card-button" :disabled="userControlsDisable">+</el-button>
             <el-button @click="processComplete" class="card-button" :icon="CircleCheck"
@@ -159,12 +159,14 @@ export default {
   background-color: #f1f1f1;
   --el-button-hover-text-color: #E81123 !important;
   --el-button-hover-border-color: #f1f1f1 !important;
+  --el-button-hover-bg-color: #f1f1f1 !important;
   --el-button-active-border-color: #f1f1f1 !important;
   --el-button-active-text-color: #DC5C66;
+  --el-button-active-bg-color: #f1f1f1;
 }
 
 .mission-details-div {
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 .card-button {
@@ -175,7 +177,9 @@ export default {
 
 .box-card {
   position: relative;
-  width: 470px;
+  /*width: 470px;*/
+  min-width: 300px;
+  max-width: 470px;
   height: 240px;
   margin: 20px;
   --el-card-border-color: #d2d2d2;
@@ -185,7 +189,7 @@ export default {
 .card-handle {
   cursor: move;
   background: #f1f1f1;
-  width: 470px;
+  width: 100%;
   height: 48px;
   position: absolute;
   top: 0;

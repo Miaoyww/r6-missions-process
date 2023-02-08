@@ -1,82 +1,3 @@
-<script setup>
-import {computed, ref} from "vue";
-import {CircleCheck, CloseBold} from "@element-plus/icons-vue";
-
-// 接收父级组件传来的参数
-const prop = defineProps(['id', 'selectedValue', 'missions'])
-const missions = computed(() => {
-  return prop.missions ? prop.missions :
-      {
-        '': {
-          desc: "在您选择任务后自动补全",
-          target: 0
-        },
-        ms1: {
-          desc: "使用Jackal、Caveira、Lion或Alibi的独特技能暴露10名敌人的信息。",
-          target: 10
-        },
-        ms2: {
-          desc: "使用爆炸装备消灭5名敌人。",
-          target: 5
-        }
-      }
-})
-const missionNames = computed(() => {
-  return prop.missions ? prop.missions : [{value: "ms1", label: "情报工作"}, {
-    value: "ms2",
-    label: "爆炸冲击波"
-  }]
-})
-const emit = defineEmits(['closeCard', 'updateUserInputValues']);
-const missionName = ref('');  // 任务名称
-const missionCurrentProcess = ref(0);  // 任务进度
-const processPercentage = computed(() => {  // 进度条百分比
-  if (missionCurrentProcess.value > 0) {
-    if (missionCurrentProcess.value > missions.value[missionName.value].target) {
-      return 100;
-    }
-    return Math.round((missionCurrentProcess.value / missions.value[missionName.value].target) * 100)
-  } else {
-    return 0;
-  }
-})
-const userControlsDisable = ref(true);  // 用户控件是否禁止
-
-function processPlus() {
-  if (missionCurrentProcess.value < missions.value[missionName.value].target) {
-    missionCurrentProcess.value++;
-  }
-  onValueChanged();
-}
-
-function processMinus() {
-  if (missionCurrentProcess.value > 0) {
-    missionCurrentProcess.value--;
-  }
-  onValueChanged();
-}
-
-function processComplete() {
-  missionCurrentProcess.value = missions.value[missionName.value].target
-  onValueChanged();
-}
-
-// 用户修改值后调用
-function onValueChanged(value) {
-  missionCurrentProcess.value =
-      missionCurrentProcess.value < missions.value[missionName.value].target ?
-          missionCurrentProcess.value : missions.value[missionName.value].target;
-  userControlsDisable.value = !(value !== '');
-  console.log('onValueChanged ran!')
-}
-
-// formatter needed
-function formatter(value) {
-  return value;
-}
-
-</script>
-
 <template>
   <div>
     <el-card class="box-card" shadow="never" body-style="padding: 16px" style="margin-left: auto; margin-right: auto">
@@ -84,8 +5,7 @@ function formatter(value) {
       <el-button @click="emit('closeCard')" :icon="CloseBold" class="card-close-button" plain/>
       <div class="wrapper">
         <el-select
-            v-model="missionName"
-            clearable
+            v-model="selectedName"
             filterable
             remote
             reserve-keyword
@@ -93,7 +13,7 @@ function formatter(value) {
             placeholder="任务名称"
             remote-show-suffix>
           <el-option
-              v-for="item in missionNames"
+              v-for="item in selectorOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"/>
@@ -101,7 +21,7 @@ function formatter(value) {
       </div>
       <div class="mission-details-div">
         <!-- 任务简介 -->
-        <p>{{ missions[missionName].desc }}</p>
+        <p>{{ missionsDetail[selectedName].desc }}</p>
       </div>
       <div style="position: absolute;bottom: 0;width: calc(100% - 32px);margin-bottom: 16px">
         <!-- 用户控件 -->
@@ -109,13 +29,13 @@ function formatter(value) {
           <div style="display: inline; margin-right: 10px">
             <el-input style="width: 125px"
                       input-style="text-align: right"
-                      v-model="missionCurrentProcess"
+                      v-model="currentProcess"
                       @change="onValueChanged"
                       :disabled="userControlsDisable"
                       :formatter="formatter"
                       :parser="(value) => value.replace(/\D*/g, '')">
               <template #append>
-                <div style="display: inline; margin: 0 -15px">/ {{ missions[missionName].target }}</div>
+                <div style="display: inline; margin: 0 -15px">/ {{ missionsDetail[selectedName].target }}</div>
               </template>
             </el-input>
           </div>
@@ -134,6 +54,73 @@ function formatter(value) {
     </el-card>
   </div>
 </template>
+
+<script setup>
+import {computed, ref} from "vue";
+import {CircleCheck, CloseBold} from "@element-plus/icons-vue";
+
+// 接收父级组件传来的参数
+const prop = defineProps(['id', 'selectedValue', 'selectorOptions', 'missionsDetail'])
+const emit = defineEmits(['closeCard', 'updateUserInputValues']);
+const missionsDetail = computed(() => {
+  return prop.missionsDetail;
+});
+const selectorOptions = computed(() => {
+  return prop.selectorOptions;
+});
+
+const selectedName = ref('no-mission');
+
+const currentProcess = ref(0);  // 任务进度
+const userControlsDisable = ref(true);  // 用户控件是否禁止
+
+
+const processPercentage = computed(() => {  // 进度条百分比
+  if (currentProcess.value > 0) {
+    if (currentProcess.value > missionsDetail.value[selectedName.value].target) {
+      return 100;
+    }
+    return Math.round((currentProcess.value / missionsDetail.value[selectedName.value].target) * 100)
+  } else {
+    return 0;
+  }
+})
+
+function processPlus() {
+  if (currentProcess.value < missionsDetail.value[selectedName.value].target) {
+    currentProcess.value++;
+  }
+  onValueChanged();
+}
+
+function processMinus() {
+  if (currentProcess.value > 0) {
+    currentProcess.value--;
+  }
+  onValueChanged();
+}
+
+function processComplete() {
+  currentProcess.value = missionsDetail.value[selectedName.value].target
+  onValueChanged();
+}
+
+// 用户修改值后调用
+function onValueChanged(value) {
+  currentProcess.value =
+      currentProcess.value < missionsDetail.value[selectedName.value].target ?
+          currentProcess.value : missionsDetail.value[selectedName.value].target;
+  userControlsDisable.value = !(value !== '');
+  console.log('onValueChanged ran!')
+}
+
+// formatter needed
+function formatter(value) {
+  return value;
+}
+
+</script>
+
 
 <script>
 export default {

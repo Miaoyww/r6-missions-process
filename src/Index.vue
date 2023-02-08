@@ -11,6 +11,8 @@
       <mission-card
           :key="element.id"
           :id="element.id"
+          :selector-options="selectorOptions"
+          :missions-detail="missionsDetail"
           @closeCard="elementRemove(index)"/>
     </template>
   </draggable>
@@ -27,27 +29,46 @@ import {v4 as uuidV4} from 'uuid';
 import draggable from "vuedraggable";
 import axios from "axios";
 
-const missions = undefined;
+const selectorOptions = ref([{value: "no-mission", label: "请选择任务"}]);
+const missionsDetail = ref({'no-mission': {desc: "选择任务后任务说明会自动补全", target: 0}});
+
 const cards = ref([]);
 
 // 添加一个mission卡片
-function elementAdd(id) {
-  if (id) {
-    ``
-  }
+function elementAdd() {
   cards.value.push({
     id: uuidV4(), // element key
   })
 }
-function getMissions(){
+
+function getMissions() {
   axios({
-    baseURL: "http://localhost:5173",
-    url:"/api/missionlist",
-    method: "get"}).then(res=>{
-      console.log(res)
+    baseURL: "http://127.0.0.1:5173",
+    url: "/api/mission_list",
+    method: "get"
+  }).then(res => {
+    const missions = res.data;
+    for (let index in missions) {
+      const missionItem = missions[index];
+      missionsDetail.value[missionItem.id] = {
+        desc: missionItem.data.desc,
+        target: missionItem.data.target,
+        nickname: missionItem.data.nickname ? missionItem.data.nickname : undefined
+      }
+    }
+    for (let index in missions) {
+      selectorOptions.value.push({
+        value: missions[index].id,
+        label: missions[index].data.name
+      })
+    }
+    console.log(selectorOptions.value);
+    console.log(missionsDetail.value);
   })
 }
+
 getMissions()
+
 // 删除一个mission卡片
 function elementRemove(index) {
   cards.value.splice(index, 1)

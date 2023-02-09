@@ -11,12 +11,18 @@
             reserve-keyword
             @change="onValueChanged"
             placeholder="任务名称"
-            remote-show-suffix>
+            remote-show-suffix
+            :filter-method="filterMethod">
           <el-option
               v-for="item in selectorOptions"
               :key="item.value"
               :label="item.label"
-              :value="item.value"/>
+              :value="item.value">
+            <span style="float: left">{{ item.label }}</span>
+            <span style="margin-left: 10px;color: var(--el-text-color-secondary);font-size: 10px;">{{
+                item.about
+              }}</span>
+          </el-option>
         </el-select>
       </div>
       <div class="mission-details-div">
@@ -65,9 +71,12 @@ const emit = defineEmits(['closeCard', 'updateUserInputValues']);
 const missionsDetail = computed(() => {
   return prop.missionsDetail;
 });
-const selectorOptions = computed(() => {
+const sourceSelectorOptions = computed(() => {
   return prop.selectorOptions;
 });
+
+const selectorOptions = ref(sourceSelectorOptions.value)
+
 
 const selectedName = ref('no-mission');
 
@@ -110,13 +119,22 @@ function onValueChanged(value) {
   currentProcess.value =
       currentProcess.value < missionsDetail.value[selectedName.value].target ?
           currentProcess.value : missionsDetail.value[selectedName.value].target;
-  userControlsDisable.value = !(value !== '');
-  console.log('onValueChanged ran!')
+  userControlsDisable.value = selectedName.value === 'no-mission';
 }
 
 // formatter needed
 function formatter(value) {
   return value;
+}
+
+function filterMethod(val) {
+  selectorOptions.value = sourceSelectorOptions.value.filter((item) => {
+    if (item.about) {
+      return item.label.toLowerCase().includes(val.toLowerCase()) || item.about.toLowerCase().includes(val.toLowerCase());
+    } else {
+      return item.label.toLowerCase().includes(val.toLowerCase())
+    }
+  })
 }
 
 </script>
@@ -170,7 +188,7 @@ export default {
 .box-card {
   position: relative;
   /*width: 470px;*/
-  min-width: 300px;
+  min-width: 314px;
   max-width: 470px;
   height: 240px;
   margin: 20px;

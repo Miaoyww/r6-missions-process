@@ -52,14 +52,15 @@ function getMissions() {
       const missionItem = missions[index];
       missionsDetail.value[missionItem.id] = {
         desc: missionItem.data.desc,
-        target: missionItem.data.target,
-        nickname: missionItem.data.nickname ? missionItem.data.nickname : undefined
+        target: missionItem.data.target
       }
     }
     for (let index in missions) {
+      const missionItem = missions[index];
       selectorOptions.value.push({
-        value: missions[index].id,
-        label: missions[index].data.name
+        value: missionItem.id,
+        label: missionItem.data.name,
+        about: missionItem.data.about ? missionItem.data.about : undefined
       })
     }
     console.log(selectorOptions.value);

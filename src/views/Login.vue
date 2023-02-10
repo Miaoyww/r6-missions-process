@@ -1,5 +1,5 @@
 <template>
-  <div style="margin: 10px 0">
+  <div style="margin: 10px; display: inline; width: 245px; height: 32px">
     <el-input v-model="tokenStr" placeholder="token" style="width: 200px; --el-input-border-radius: 5px 0 0 5px" clearable/>
     <el-button plain type="primary" :icon="Select" style="margin-left: -1px; --el-border-radius-base: 0 5px 5px 0; --el-button-border-color: #dcdfe6" @click="saveToken"/>
   </div>

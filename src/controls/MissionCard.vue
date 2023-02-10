@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-card class="box-card" shadow="never" body-style="padding: 16px" style="margin-left: auto; margin-right: auto">
+  <div style="">
+    <el-card class="box-card" shadow="never" body-style="padding: 16px">
       <div class="handle card-handle"></div>
       <el-button @click="emit('closeCard')" :icon="CloseBold" class="card-close-button" plain/>
       <div class="wrapper">
@@ -79,9 +79,7 @@ onBeforeUnmount(() => {
 })
 
 const timer = setInterval(getActions, 500);
-const missionsDetail = computed(() => {
-  return prop.missionsDetail;
-});
+const missionsDetail = ref(prop.missionsDetail)
 
 const sourceSelectorOptions = ref(prop.selectorOptions);
 const selectorOptions = ref(prop.selectorOptions);
@@ -238,7 +236,6 @@ export default {
   min-width: 314px;
   max-width: 470px;
   height: 240px;
-  margin: 20px;
   --el-card-border-color: #d2d2d2;
   --el-card-border-radius: 10px;
 }

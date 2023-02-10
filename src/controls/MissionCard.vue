@@ -64,9 +64,11 @@
 <script setup>
 import {computed, ref} from "vue";
 import {CircleCheck, CloseBold} from "@element-plus/icons-vue";
+import axios from "axios";
 
 // 接收父级组件传来的参数
-const prop = defineProps(['id', 'selectedValue', 'selectorOptions', 'missionsDetail'])
+const prop = defineProps(['id', 'selectedValue', 'selectorOptions', 'missionsDetail', 'data'])
+console.log(prop)
 const emit = defineEmits(['closeCard', 'updateUserInputValues']);
 const missionsDetail = computed(() => {
   return prop.missionsDetail;
@@ -78,10 +80,10 @@ const sourceSelectorOptions = computed(() => {
 const selectorOptions = ref(sourceSelectorOptions.value)
 
 
-const selectedName = ref('no-mission');
+const selectedName = ref(prop.data ? prop.data["mission"] : 'no-mission');
 
-const currentProcess = ref(0);  // 任务进度
-const userControlsDisable = ref(true);  // 用户控件是否禁止
+const currentProcess = ref(prop.data ? prop.data["target"] : 0);  // 任务进度
+const userControlsDisable = ref(selectedName.value === 'no-mission');  // 用户控件是否禁止
 
 
 const processPercentage = computed(() => {  // 进度条百分比
@@ -115,11 +117,24 @@ function processComplete() {
 }
 
 // 用户修改值后调用
-function onValueChanged(value) {
+function onValueChanged() {
   currentProcess.value =
       currentProcess.value < missionsDetail.value[selectedName.value].target ?
-          currentProcess.value : missionsDetail.value[selectedName.value].target;
+          parseInt(currentProcess.value) : missionsDetail.value[selectedName.value].target;
   userControlsDisable.value = selectedName.value === 'no-mission';
+  console.log(currentProcess.value)
+  axios({
+    withCredentials: true,
+    url: "/api/cards/modify",
+    method: "post",
+    data: {
+      id: prop.id,
+      data: {
+        mission: selectedName.value,
+        target: currentProcess.value
+      }
+    }
+  })
 }
 
 // formatter needed

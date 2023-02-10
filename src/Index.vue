@@ -1,6 +1,6 @@
 <template>
   <el-button type="primary" @click="elementAdd">点击添加一个组件</el-button>
-  <el-button type="primary" @click="elementRemove">点击删除一个组件</el-button>
+  <el-button type="primary" @click="test">测试按钮</el-button>
   <draggable
       :list="cards"
       item-key="id"
@@ -13,6 +13,7 @@
           :id="element.id"
           :selector-options="selectorOptions"
           :missions-detail="missionsDetail"
+          :data="cardData[element.id]"
           @closeCard="elementRemove(index)"/>
     </template>
   </draggable>
@@ -31,6 +32,7 @@ import axios from "axios";
 
 const selectorOptions = ref([{value: "no-mission", label: "请选择任务"}]);
 const missionsDetail = ref({'no-mission': {desc: "选择任务后任务说明会自动补全", target: 0}});
+let cardData = {}
 
 const cards = ref([]);
 
@@ -41,9 +43,14 @@ function elementAdd() {
   })
 }
 
+// 删除卡片
+function elementRemove(index) {
+  cards.value.splice(index, 1)
+}
+
 function getMissions() {
   axios({
-    baseURL: "http://127.0.0.1:5173",
+    withCredentials: true,
     url: "/api/mission_list",
     method: "get"
   }).then(res => {
@@ -68,11 +75,24 @@ function getMissions() {
   })
 }
 
-getMissions()
+function getCards() {
+  axios({
+    withCredentials: true,
+    url: "/api/cards/get",
+    method: "get"
+  }).then(res => {
+    cardData = res.data["cards"]
+    cards.value = res.data["index"]
+    // console.log(res.data["index"])
+    console.log(cardData)
+  })
+}
 
-// 删除一个mission卡片
-function elementRemove(index) {
-  cards.value.splice(index, 1)
+getMissions()
+getCards()
+
+function test() {
+  console.log(cards)
 }
 
 const dragOptions = {

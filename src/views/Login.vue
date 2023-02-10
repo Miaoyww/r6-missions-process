@@ -1,9 +1,21 @@
 <template>
-  <div>
-    <el-input placeholder="token" style="width: 200px"/>
+  <div style="margin: 10px 0">
+    <el-input v-model="tokenStr" placeholder="token" style="width: 200px; --el-input-border-radius: 5px 0 0 5px" clearable/>
+    <el-button plain type="primary" :icon="Select" style="margin-left: -1px; --el-border-radius-base: 0 5px 5px 0; --el-button-border-color: #dcdfe6" @click="saveToken"/>
   </div>
 </template>
 
+<script setup>
+import {ref} from "vue";
+import {Select} from "@element-plus/icons-vue";
+
+const tokenStr = ref($cookies.get('token'))
+
+function saveToken() {
+  $cookies.set('token', tokenStr.value, -1)
+  location.reload()
+}
+</script>
 <script>
 export default {
   name: "Login"

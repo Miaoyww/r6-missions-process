@@ -24,7 +24,7 @@
 }
 </style>
 <script setup>
-import {ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import MissionCard from '@/controls/MissionCard.vue';
 import {v4 as uuidV4} from 'uuid';
 import draggable from "vuedraggable";
@@ -35,6 +35,10 @@ const missionsDetail = ref({'no-mission': {desc: "选择任务后任务说明会
 let cardData = {}
 
 const cards = ref([]);
+onMounted(() => {
+  getMissions();
+  getCards();
+})
 
 // 添加一个mission卡片
 function elementAdd() {
@@ -87,9 +91,6 @@ function getCards() {
     console.log(cardData)
   })
 }
-
-getMissions()
-getCards()
 
 function test() {
   console.log(cards)

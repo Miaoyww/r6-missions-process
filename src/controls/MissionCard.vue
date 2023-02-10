@@ -46,9 +46,9 @@
             </el-input>
           </div>
           <el-button-group style="margin-right: 5px">
-            <el-button @click="processMinus" class="card-button" :disabled="userControlsDisable">-</el-button>
-            <el-button @click="processPlus" class="card-button" :disabled="userControlsDisable">+</el-button>
-            <el-button @click="processComplete" class="card-button" :icon="CircleCheck"
+            <el-button @click="ProcessMinus" class="card-button" :disabled="userControlsDisable">-</el-button>
+            <el-button @click="ProcessPlus" class="card-button" :disabled="userControlsDisable">+</el-button>
+            <el-button @click="ProcessComplete" class="card-button" :icon="CircleCheck"
                        :disabled="userControlsDisable"/>
           </el-button-group>
         </div>
@@ -62,23 +62,35 @@
 </template>
 
 <script setup>
-import {computed, ref} from "vue";
+import {computed, onMounted, onBeforeUnmount, ref} from "vue";
 import {CircleCheck, CloseBold} from "@element-plus/icons-vue";
 import axios from "axios";
 
 // 接收父级组件传来的参数
 const prop = defineProps(['id', 'selectedValue', 'selectorOptions', 'missionsDetail', 'data'])
-console.log(prop)
 const emit = defineEmits(['closeCard', 'updateUserInputValues']);
+
+onMounted(() => {
+  console.log(`the component is now mounted.`)
+})
+
+onBeforeUnmount(() => {
+  clearInterval(timer)
+})
+
+const timer = setInterval(getActions, 500);
 const missionsDetail = computed(() => {
   return prop.missionsDetail;
 });
-const sourceSelectorOptions = computed(() => {
-  return prop.selectorOptions;
-});
 
-const selectorOptions = ref(sourceSelectorOptions.value)
+const sourceSelectorOptions = ref(prop.selectorOptions);
+const selectorOptions = ref(prop.selectorOptions);
 
+
+let lastActionNumber = 0;
+let actionNumber = 0;
+
+let isAbleToPost = false;
 
 const selectedName = ref(prop.data ? prop.data["mission"] : 'no-mission');
 
@@ -97,44 +109,64 @@ const processPercentage = computed(() => {  // 进度条百分比
   }
 })
 
-function processPlus() {
+
+async function getActions() {
+  lastActionNumber = actionNumber;
+  if (actionNumber > 0) {
+    actionNumber--;
+    isAbleToPost = false;
+  }
+  if (actionNumber === 0) {
+    if (lastActionNumber !== 0) {
+      isAbleToPost = true;
+    }
+    if (isAbleToPost === true) {
+      console.log('posted!')
+      axios({
+        withCredentials: true,
+        url: "/api/cards/modify",
+        method: "post",
+        data: {
+          id: prop.id,
+          data: {
+            mission: selectedName.value,
+            target: currentProcess.value
+          }
+        }
+      })
+      isAbleToPost = false;
+    }
+  }
+}
+
+function ProcessPlus() {
   if (currentProcess.value < missionsDetail.value[selectedName.value].target) {
     currentProcess.value++;
   }
   onValueChanged();
 }
 
-function processMinus() {
+function ProcessMinus() {
   if (currentProcess.value > 0) {
     currentProcess.value--;
   }
   onValueChanged();
 }
 
-function processComplete() {
+function ProcessComplete() {
   currentProcess.value = missionsDetail.value[selectedName.value].target
   onValueChanged();
 }
 
 // 用户修改值后调用
-function onValueChanged() {
+async function onValueChanged() {
+  console.log('onValueChanged');
   currentProcess.value =
       currentProcess.value < missionsDetail.value[selectedName.value].target ?
           parseInt(currentProcess.value) : missionsDetail.value[selectedName.value].target;
   userControlsDisable.value = selectedName.value === 'no-mission';
-  console.log(currentProcess.value)
-  axios({
-    withCredentials: true,
-    url: "/api/cards/modify",
-    method: "post",
-    data: {
-      id: prop.id,
-      data: {
-        mission: selectedName.value,
-        target: currentProcess.value
-      }
-    }
-  })
+  actionNumber++;
+  console.log(actionNumber);
 }
 
 // formatter needed

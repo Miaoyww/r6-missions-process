@@ -1,5 +1,5 @@
 <template>
-  <div style="">
+  <div>
     <el-card class="box-card" shadow="never" body-style="padding: 16px">
       <div class="handle card-handle"></div>
       <el-button @click="emit('closeCard')" :icon="CloseBold" class="card-close-button" plain/>
@@ -67,8 +67,9 @@ import {CircleCheck, CloseBold} from "@element-plus/icons-vue";
 import axios from "axios";
 
 // 接收父级组件传来的参数
-const prop = defineProps(['id', 'selectedValue', 'selectorOptions', 'missionsDetail', 'data'])
+const prop = defineProps(['id', 'selectorOptions', 'missionsDetail', 'data'])
 const emit = defineEmits(['closeCard', 'updateUserInputValues']);
+
 
 onMounted(() => {
   console.log(`the component is now mounted.`)
@@ -85,10 +86,7 @@ const sourceSelectorOptions = ref(prop.selectorOptions);
 const selectorOptions = ref(prop.selectorOptions);
 
 
-let lastActionNumber = 0;
-let actionNumber = 0;
-
-let isAbleToPost = false;
+let actionNumber = -1;
 
 const selectedName = ref(prop.data ? prop.data["mission"] : 'no-mission');
 
@@ -109,31 +107,22 @@ const processPercentage = computed(() => {  // 进度条百分比
 
 
 async function getActions() {
-  lastActionNumber = actionNumber;
-  if (actionNumber > 0) {
-    actionNumber--;
-    isAbleToPost = false;
-  }
   if (actionNumber === 0) {
-    if (lastActionNumber !== 0) {
-      isAbleToPost = true;
-    }
-    if (isAbleToPost === true) {
-      console.log('posted!')
-      axios({
-        withCredentials: true,
-        url: "/api/cards/modify",
-        method: "post",
+    axios({
+      withCredentials: true,
+      url: "/api/cards/modify",
+      method: "post",
+      data: {
+        id: prop.id,
         data: {
-          id: prop.id,
-          data: {
-            mission: selectedName.value,
-            target: currentProcess.value
-          }
+          mission: selectedName.value,
+          target: currentProcess.value
         }
-      })
-      isAbleToPost = false;
-    }
+      }
+    })
+  }
+  if (actionNumber >= 0) {
+    actionNumber--;
   }
 }
 
@@ -163,8 +152,7 @@ async function onValueChanged() {
       currentProcess.value < missionsDetail.value[selectedName.value].target ?
           parseInt(currentProcess.value) : missionsDetail.value[selectedName.value].target;
   userControlsDisable.value = selectedName.value === 'no-mission';
-  actionNumber++;
-  console.log(actionNumber);
+  actionNumber = 2;
 }
 
 // formatter needed
@@ -248,6 +236,60 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  .box-card {
+    --el-card-border-color: #1C1C1E;
+    --el-card-bg-color: #1C1C1E;
+    --el-fill-color-blank: rgba(0, 0, 0, 0);
+    --el-text-color-regular: white;
+    --el-border-color: #29292C !important;
+    --el-fill-color-light: #1C1C1E;
+    --el-border-color-lighter: #29292C;
+    --el-color-primary: #2A598A;
+    --el-disabled-bg-color: #1C1C1E;
+    --el-disabled-border-color: #29292C;
+  }
+
+  .el-button {
+    --el-button-hover-text-color: white;
+    --el-button-hover-bg-color: #29292C;
+    --el-button-hover-border-color: #3f3f3f;
+    --el-button-disabled-border-color:#29292C;
+  }
+
+  .el-popper {
+    --el-bg-color-overlay: black;
+  }
+
+  .card-handle {
+    background: #1C1C1E;
+  }
+
+  .card-close-button {
+    border-color: #1C1C1E;
+    background-color: #1C1C1E;
+    --el-button-hover-text-color: #810b17 !important;
+    --el-button-hover-border-color: #1C1C1E !important;
+    --el-button-hover-bg-color: #1C1C1E !important;
+    --el-button-active-border-color: #1C1C1E !important;
+    --el-button-active-text-color: #DC5C66;
+    --el-button-active-bg-color: #1C1C1E;
+  }
+
+  .el-input {
+    --el-input-bg-color: #29292c;
+    --el-input-border-color: #29292c;
+    --el-input-text-color: white;
+    --el-input-hover-border-color: #3f3f3f;
+    --el-input-focus-border-color: #337ecc;
+  }
+
+  .mission-details-div {
+    color: white;
+  }
+
 }
 
 /*.el-button + .el-button {*/

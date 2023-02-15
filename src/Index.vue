@@ -148,7 +148,8 @@ async function getMissions() {
   await axios({
     withCredentials: true,
     url: "/api/mission_list",
-    method: "get"
+    method: "get",
+    params: {date:Date.now()}
   }).then(res => {
     const missions = res.data;
     for (let index in missions) {

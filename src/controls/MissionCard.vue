@@ -150,7 +150,7 @@ async function onValueChanged() {
   console.log('onValueChanged');
   currentProcess.value =
       currentProcess.value < missionsDetail.value[selectedName.value].target ?
-          parseInt(currentProcess.value) : missionsDetail.value[selectedName.value].target;
+          parseInt(currentProcess.value ? currentProcess.value : 0) : missionsDetail.value[selectedName.value].target;
   userControlsDisable.value = selectedName.value === 'no-mission';
   actionNumber = 2;
 }
